@@ -12,12 +12,16 @@ def main():
     myStupidClassifier = StupidRecognizer(data.trainingSet,
                                           data.validationSet,
                                           data.testSet)
-    myPerceptronClassifier = Perceptron(data.trainingSet,
+    perceptronClassifiers = []
+    for epochs in [10,50,100,250, 500]:
+        for learningRate in [0.1, 0.05, 0.01, 0.005, 0.001]:
+            myPerceptronClassifier = Perceptron(data.trainingSet,
                                         data.validationSet,
                                         data.testSet,
-                                        learningRate=0.005,
-                                        epochs=30)
-    
+                                        learningRate=learningRate,
+                                        epochs=epochs)
+            perceptronClassifiers.append(myPerceptronClassifier)
+
     # Train the classifiers
     print("=========================")
     print("Training..")
@@ -27,14 +31,14 @@ def main():
     print("Done..")
 
     print("\nPerceptron has been training..")
-    myPerceptronClassifier.train()
+    for myPerceptronClassifier in perceptronClassifiers:
+        myPerceptronClassifier.train()
     print("Done..")
 
     # Do the recognizer
     # Explicitly specify the test set to be evaluated
     stupidPred = myStupidClassifier.evaluate()
-    perceptronPred = myPerceptronClassifier.evaluate()
-    
+
     # Report the result
     print("=========================")
     evaluator = Evaluator()
@@ -45,8 +49,11 @@ def main():
 
     print("\nResult of the Perceptron recognizer:")
     # evaluator.printComparison(data.testSet, perceptronPred)
-    evaluator.printAccuracy(data.testSet, perceptronPred)
-    
+    for myPerceptronClassifier in perceptronClassifiers:
+        perceptronPred = myPerceptronClassifier.evaluate()
+        print("Classifier: Epochs " + str(myPerceptronClassifier.epochs) + " / Learning Rate: " + str(myPerceptronClassifier.learningRate))
+        evaluator.printAccuracy(data.testSet, perceptronPred)
+
 
 if __name__ == '__main__':
     main()
