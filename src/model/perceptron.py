@@ -47,7 +47,7 @@ class Perceptron(Classifier):
 
         # Initialize the weight vector with small random values
         # around 0 and 0.1
-        self.weight = np.random.rand(self.trainingSet.input.shape[1])/100
+        self.weight = np.random.rand(self.trainingSet.input.shape[1]+1)/100
 
     def train(self, verbose=True):
         """Train the perceptron with the perceptron learning algorithm.
@@ -69,6 +69,9 @@ class Perceptron(Classifier):
                 error = label - predictedClass
                 self.updateWeights(input, error)
 
+    def augmentInput(self, input):
+        return np.append(input, 1)
+
     def classify(self, testInstance):
         """Classify a single instance.
 
@@ -82,7 +85,7 @@ class Perceptron(Classifier):
             True if the testInstance is recognized as a 7, False otherwise.
         """
         # Write your code to do the classification on an input image
-        return self.fire(testInstance)
+        return self.fire(self.augmentInput(testInstance))
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -105,7 +108,7 @@ class Perceptron(Classifier):
 
     def updateWeights(self, input, error):
         # Write your code to update the weights of the perceptron here
-        deltaW = self.learningRate * error * input
+        deltaW = self.learningRate * error * self.augmentInput(input)
         self.weight = self.weight + deltaW
 
     def fire(self, input):
