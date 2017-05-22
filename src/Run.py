@@ -12,15 +12,11 @@ def main():
     myStupidClassifier = StupidRecognizer(data.trainingSet,
                                           data.validationSet,
                                           data.testSet)
-    perceptronClassifiers = []
-    for epochs in [10,50,100,250, 500]:
-        for learningRate in [0.1, 0.05, 0.01, 0.005, 0.001]:
-            myPerceptronClassifier = Perceptron(data.trainingSet,
+    myPerceptronClassifier = Perceptron(data.trainingSet,
                                         data.validationSet,
                                         data.testSet,
-                                        learningRate=learningRate,
-                                        epochs=epochs)
-            perceptronClassifiers.append(myPerceptronClassifier)
+                                        learningRate=0.05,
+                                        epochs=250)
 
     # Train the classifiers
     print("=========================")
@@ -31,13 +27,13 @@ def main():
     print("Done..")
 
     print("\nPerceptron has been training..")
-    for myPerceptronClassifier in perceptronClassifiers:
-        myPerceptronClassifier.train()
+    myPerceptronClassifier.train()
     print("Done..")
 
     # Do the recognizer
     # Explicitly specify the test set to be evaluated
     stupidPred = myStupidClassifier.evaluate()
+    perceptronPred = myPerceptronClassifier.evaluate()
 
     # Report the result
     print("=========================")
@@ -49,10 +45,7 @@ def main():
 
     print("\nResult of the Perceptron recognizer:")
     # evaluator.printComparison(data.testSet, perceptronPred)
-    for myPerceptronClassifier in perceptronClassifiers:
-        perceptronPred = myPerceptronClassifier.evaluate()
-        print("Classifier: Epochs " + str(myPerceptronClassifier.epochs) + " / Learning Rate: " + str(myPerceptronClassifier.learningRate))
-        evaluator.printAccuracy(data.testSet, perceptronPred)
+    evaluator.printAccuracy(data.testSet, perceptronPred)
 
 
 if __name__ == '__main__':
