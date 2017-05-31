@@ -9,6 +9,17 @@ from report.evaluator import Evaluator
 
 
 def main():
+    from util.activation_functions import Activation
+    for func in ["sigmoid", "tanh", "relu", "linear"]:
+        print(func)
+        print((Activation.getActivation(func)(0)))
+        print((Activation.getActivation(func)(2)))
+        print(float((Activation.getDerivative(func)(0))))
+        print(float((Activation.getDerivative(func)(2))))
+        print("")
+
+    print((Activation.getActivation("softmax")(0)))
+    print((Activation.getActivation("softmax")(1)))
     data = MNISTSeven("../data/mnist_seven.csv", 3000, 1000, 1000)
     myStupidClassifier = StupidRecognizer(data.trainingSet,
                                           data.validationSet,
@@ -31,7 +42,7 @@ def main():
     myPerceptronClassifier.train()
     print("Done..")
 
-    
+
     # Do the recognizer
     # Explicitly specify the test set to be evaluated
     stupidPred = myStupidClassifier.evaluate()
@@ -48,7 +59,7 @@ def main():
     print("\nResult of the Perceptron recognizer:")
     # evaluator.printComparison(data.testSet, perceptronPred)
     evaluator.printAccuracy(data.testSet, perceptronPred)
-    
-    
+
+
 if __name__ == '__main__':
     main()

@@ -6,8 +6,8 @@ Activation functions which can be used within neurons.
 
 from numpy import exp
 from numpy import divide
-
-
+from numpy import sum
+from numpy import round
 class Activation:
     """
     Containing various activation functions and their derivatives
@@ -19,44 +19,50 @@ class Activation:
 
     @staticmethod
     def sigmoid(netOutput):
-        pass
+        return divide(1, 1 + exp(-netOutput))
+
     @staticmethod
     def sigmoidPrime(netOutput):
         # Here you have to code the derivative of sigmoid function
         # netOutput.*(1-netOutput)
-        pass
+        return Activation.sigmoid(netOutput) * (1 - Activation.sigmoid(netOutput))
 
     @staticmethod
     def tanh(netOutput):
-        pass
-        
+        return divide(exp(2*netOutput) - 1, exp(2*netOutput) + 1)
+
     @staticmethod
     def tanhPrime(netOutput):
-        # Here you have to code the derivative of tanh function
-        pass
+        return 1 - Activation.tanh(netOutput) * Activation.tanh(netOutput)
 
     @staticmethod
     def rectified(netOutput):
-        return lambda x: max(0.0, x)
+        # TODO: lambda x: max(0.0, x) was wrong?
+        return max(0.0, netOutput)
 
     @staticmethod
     def rectifiedPrime(netOutput):
-        # Here you have to code the derivative of rectified linear function
-        pass
+        if netOutput > 0:
+            return 1
+        else:
+            return 0
 
     @staticmethod
     def identity(netOutput):
-        return lambda x: x
+        # TODO: was this wrong? (lambda x: x)
+        return netOutput
 
     @staticmethod
     def identityPrime(netOutput):
-        # Here you have to code the derivative of identity function
-        pass
+        return 1
 
     @staticmethod
     def softmax(netOutput):
+        z_exp = exp(netOutput)
+        z_sum = sum(z_exp)
+        softmax = divide(round(netOutput), z_sum)
         # Here you have to code the softmax function
-        pass
+        return softmax
 
     @staticmethod
     def getActivation(str):
