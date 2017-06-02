@@ -4,7 +4,7 @@ import sys
 import logging
 
 import numpy as np
-
+from util.loss_functions import MeanSquaredError
 from util.activation_functions import Activation
 from model.classifier import Classifier
 
@@ -55,9 +55,20 @@ class LogisticRegression(Classifier):
         verbose : boolean
             Print logging messages with validation accuracy if verbose is True.
         """
+        #
+        mse = MeanSquaredError()
+        for epoch in range(self.epochs):
+            output = self.classify(self.trainingSet.input)
+            target = self.trainingSet.label
+            totalError = mse.calculateError(target, output)
+            diff = (target - output)
+            grad = sum(self.learningRate * Activation.getDerivative('sigmoid')(output) * np.multiply(self.trainingSet.input, diff[:, np.newaxis]))
+            self.updateWeights(grad)
+            if totalError == 0:
+                break
+            if verbose:
+                logging.info("Epoch: (" + str(epoch) + "); Error: " + str(totalError))
 
-        pass
-        
     def classify(self, testInstance):
         """Classify a single instance.
 
@@ -70,7 +81,9 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        pass
+        # TODO: Threshold?
+        return self.fire(testInstance)
+
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -92,7 +105,7 @@ class LogisticRegression(Classifier):
         return list(map(self.classify, test))
 
     def updateWeights(self, grad):
-        pass
+        self.weight += grad
 
     def fire(self, input):
         # Look at how we change the activation function here!!!!
