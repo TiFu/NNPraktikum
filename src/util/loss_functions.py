@@ -60,7 +60,8 @@ class MeanSquaredError(Error):
 
     def calculateError(self, target, output):
         # MSE = 1/n*sum (i=1 to n) of (target_i - output_i)^2)
-        pass
+        diff = (target - output)
+        return 1 / float(len(target)) * sum(diff * diff)
 
 
 class SumSquaredError(Error):
@@ -73,7 +74,8 @@ class SumSquaredError(Error):
 
     def calculateError(self, target, output):
         # SSE = 1/2*sum (i=1 to n) of (target_i - output_i)^2)
-        pass
+        diff = (target - output)
+        return 1 / 2 * sum(diff * diff)
 
 
 class BinaryCrossEntropyError(Error):
@@ -85,7 +87,7 @@ class BinaryCrossEntropyError(Error):
         self.errorString = 'bce'
 
     def calculateError(self, target, output):
-        pass
+        return 1 / float(len(target)) * sum(target * np.log2(output) + (1 - target) * np.log2(1 - output))
 
 
 class CrossEntropyError(Error):
@@ -97,4 +99,4 @@ class CrossEntropyError(Error):
         self.errorString = 'crossentropy'
 
     def calculateError(self, target, output):
-        pass
+        return - sum(target * np.log2(output) + (1 - target) * np.log2(1-output))
