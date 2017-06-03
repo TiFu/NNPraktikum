@@ -58,11 +58,11 @@ class LogisticRegression(Classifier):
         #
         mse = MeanSquaredError()
         for epoch in range(self.epochs):
-            output = self.classify(self.trainingSet.input)
+            output = np.array(map(self.fire, self.trainingSet.input))
             target = self.trainingSet.label
             totalError = mse.calculateError(target, output)
             diff = (target - output)
-            grad = sum(self.learningRate * Activation.getDerivative('sigmoid')(output) * np.multiply(self.trainingSet.input, diff[:, np.newaxis]))
+            grad = self.learningRate * sum(np.multiply(np.multiply(diff, Activation.getDerivative('sigmoid')(output))[:, np.newaxis], self.trainingSet.input))
             self.updateWeights(grad)
             if totalError == 0:
                 break
@@ -82,7 +82,7 @@ class LogisticRegression(Classifier):
             True if the testInstance is recognized as a 7, False otherwise.
         """
         # TODO: Threshold?
-        return self.fire(testInstance)
+        return self.fire(testInstance) >= 0.5
 
 
     def evaluate(self, test=None):
