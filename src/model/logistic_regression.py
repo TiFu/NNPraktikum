@@ -46,6 +46,7 @@ class LogisticRegression(Classifier):
 
         # Initialize the weight vector with small values
         self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
+        print("epoch,training error,validation error")
 
     def train(self, verbose=True):
         """Train the Logistic Regression.
@@ -58,16 +59,18 @@ class LogisticRegression(Classifier):
         #
         mse = MeanSquaredError()
         for epoch in range(self.epochs):
-            output = np.array(map(self.fire, self.trainingSet.input))
+            output = np.array(list(map(self.fire, self.trainingSet.input)))
             target = self.trainingSet.label
             totalError = mse.calculateError(target, output)
             diff = (target - output)
-            grad = self.learningRate * sum(np.multiply(np.multiply(diff, Activation.getDerivative('sigmoid')(output))[:, np.newaxis], self.trainingSet.input))
+            grad = 2 * self.learningRate * sum(np.multiply(np.multiply(diff, Activation.getDerivative('sigmoid')(output))[:, np.newaxis], self.trainingSet.input))
+            # logging.info(f"{grad}")
             self.updateWeights(grad)
             if totalError == 0:
                 break
             if verbose:
-                logging.info("Epoch: (" + str(epoch) + "); Error: " + str(totalError))
+                totalErrorValid = mse.calculateError(self.validationSet.label, np.array(list(map(self.fire, self.validationSet.input))))
+                print(",".join([str(epoch), str(totalError), str(totalErrorValid)]))
 
     def classify(self, testInstance):
         """Classify a single instance.
