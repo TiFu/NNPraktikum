@@ -3,7 +3,6 @@
 """
 Activation functions which can be used within neurons.
 """
-
 from numpy import exp
 from numpy import divide
 
@@ -19,17 +18,16 @@ class Activation:
 
     @staticmethod
     def sigmoid(netOutput):
-        pass
+        return 1./(1.+exp(-netOutput))
     @staticmethod
     def sigmoidPrime(netOutput):
         # Here you have to code the derivative of sigmoid function
-        # netOutput.*(1-netOutput)
-        pass
+        return netOutput*(1.-netOutput)
 
     @staticmethod
     def tanh(netOutput):
         pass
-        
+
     @staticmethod
     def tanhPrime(netOutput):
         # Here you have to code the derivative of tanh function
@@ -55,8 +53,11 @@ class Activation:
 
     @staticmethod
     def softmax(netOutput):
-        # Here you have to code the softmax function
-        pass
+        return exp(netOutput)/exp(sum(netOutput))
+
+    @staticmethod
+    def softmaxPrime(netOutput):
+        return netOutput*(1.-netOutput)
 
     @staticmethod
     def getActivation(str):
@@ -86,6 +87,8 @@ class Activation:
 
         if str == 'sigmoid':
             return Activation.sigmoidPrime
+        elif str == 'softmax':
+            return Activation.softmaxPrime
         elif str == 'tanh':
             return Activation.tanhPrime
         elif str == 'relu':

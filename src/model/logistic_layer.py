@@ -1,13 +1,11 @@
-
+import sys
 import time
-
 import numpy as np
 
 from util.activation_functions import Activation
-from model.layer import Layer
 
 
-class LogisticLayer(Layer):
+class LogisticLayer:
     """
     A layer of perceptrons acting as the output layer
 
@@ -41,7 +39,7 @@ class LogisticLayer(Layer):
     """
 
     def __init__(self, nIn, nOut, weights=None,
-                 activation='softmax', isClassifierLayer=True):
+                 activation='sigmoid', isClassifierLayer=True):
 
         # Get activation function from string
         # Notice the functional programming paradigms of Python + Numpy
@@ -84,7 +82,11 @@ class LogisticLayer(Layer):
         ndarray :
             a numpy array (1,nOut) containing the output of the layer
         """
-        pass
+        self.input = input
+        self.output = np.array(map(self.activation,
+                            np.dot(self.weights, np.transpose(input))))
+
+        return self.output
 
     def computeDerivative(self, nextDerivatives, nextWeights):
         """
@@ -102,10 +104,18 @@ class LogisticLayer(Layer):
         ndarray :
             a numpy array containing the partial derivatives on this layer
         """
-        pass
+        activationDerivative = Activation.getDerivative(self.activationString)
 
-    def updateWeights(self):
+        for i in range(0, self.nOut):
+            #self.delta[i] = self.output[i]*(1-self.output[i])*nextDerivatives[i]
+            downStr = np.dot(nextWeights[:, i], nextDerivatives)
+            self.delta[i] = activationDerivative(self.output[i])*downStr
+        return self.delta
+
+    def updateWeights(self, learningRate):
         """
         Update the weights of the layer
         """
-        pass
+        for i in range(0, self.nOut):
+            for j in range(0, self.nIn):
+                self.weights[i,j] -=learningRate*self.delta[i][0]*self.input[j]
