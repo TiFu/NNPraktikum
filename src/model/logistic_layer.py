@@ -39,7 +39,7 @@ class LogisticLayer:
     """
 
     def __init__(self, nIn, nOut, weights=None,
-                 activation='sigmoid', isClassifierLayer=True):
+                 activation='softmax', isClassifierLayer=True):
 
         # Get activation function from string
         # Notice the functional programming paradigms of Python + Numpy
@@ -83,8 +83,7 @@ class LogisticLayer:
             a numpy array (1,nOut) containing the output of the layer
         """
         self.input = input
-        self.output = np.array(map(self.activation,
-                            np.dot(self.weights, np.transpose(input))))
+        self.output = self.activation(np.dot(self.weights, np.transpose(input)))
 
         return self.output
 

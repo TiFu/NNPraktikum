@@ -6,7 +6,7 @@ import logging
 import numpy as np
 
 from util.activation_functions import Activation
-from util.loss_functions import MeanSquaredError
+from util.loss_functions import BinaryCrossEntropyError
 from model.classifier import Classifier
 from model.logistic_layer import LogisticLayer
 from report.evaluator import Evaluator
@@ -66,7 +66,7 @@ class LogisticRegression(Classifier):
         """
 
         # Loss function
-        loss = MeanSquaredError()
+        loss = BinaryCrossEntropyError()
         #Evaluator
         evaluator = Evaluator()
 
@@ -76,7 +76,8 @@ class LogisticRegression(Classifier):
                                     self.trainingSet.label):
 
                 output = self.logistic_layer.forward(self.biasInput(input))
-                error = -(label - output)
+                error = loss.calculateDerivative(label, output)
+                #error = -label/output + (1-label)/(1-output)
                 self.updateWeights(error)
 
             if verbose:

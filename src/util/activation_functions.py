@@ -53,7 +53,7 @@ class Activation:
 
     @staticmethod
     def softmax(netOutput):
-        return exp(netOutput)/exp(sum(netOutput))
+        return exp(netOutput)/sum(exp(netOutput))
 
     @staticmethod
     def softmaxPrime(netOutput):

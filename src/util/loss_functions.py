@@ -58,27 +58,12 @@ class MeanSquaredError(Error):
     def errorString(self):
         self.errorString = 'mse'
 
-    def calculateError(self, target, output):
+    def calculateError(self, target, output, n):
         # MSE = 1/n*sum (i=1 to n) of (target_i - output_i)^2)
-        nOut = len(output[0])
-        n = len(target)
-        meanSquaredErrors = np.zeros(nOut)
-        for o in range(0, nOut):
-            s = 0
-            for ti in target:
-                s += ti - output[ti][o]
-            meanSquaredErrors[o] = 1./n*(s**2)
-        return meanSquaredErrors
+        return (1./n)*(target - output)**2
 
-    def calculateDerivative(self, target, output):
-        # SSE = 1/2*sum (i=1 to n) of (target_i - output_i)^2)
-        nOut = len(output[0])
-        n = len(target)
-        meanSquaredDerivatives = np.zeros(nOut)
-        for o in range(0, nOut):
-            for ti in target:
-                meanSquaredDerivatives[o] += -0.5*n*(ti - output[ti][o])
-        return meanSquaredDerivatives
+    def calculateDerivative(self, target, output, n):
+        return -(1./2*n)*(target - output)
 
 
 class SumSquaredError(Error):
@@ -91,23 +76,10 @@ class SumSquaredError(Error):
 
     def calculateError(self, target, output):
         # SSE = 1/2*sum (i=1 to n) of (target_i - output_i)^2)
-        nOut = len(output[0])
-        sumSquaredErrors = np.zeros(nOut)
-        for o in range(0, nOut):
-            s = 0
-            for ti in target:
-                s += ti - output[ti][o]
-            sumSquaredErrors[o] = 0.5*s**2
-        return sumSquaredErrors
+        return 0.5*(target - output)**2
 
     def calculateDerivative(self, target, output):
-        # SSE = 1/2*sum (i=1 to n) of (target_i - output_i)^2)
-        nOut = len(output[0])
-        sumSquaredDerivatives = np.zeros(nOut)
-        for o in range(0, nOut):
-            for ti in target:
-                sumSquaredDerivatives[o] += -(ti - output[ti][o])
-        return sumSquaredDerivatives
+        return -(target - output)
 
 
 class BinaryCrossEntropyError(Error):
@@ -119,7 +91,10 @@ class BinaryCrossEntropyError(Error):
         self.errorString = 'bce'
 
     def calculateError(self, target, output):
-        return -sum(target*np.log(output) + (1-target)*np.log(1-output))
+        return -(target*np.log(output) + (1-target)*np.log(1-output))
+
+    def calculateDerivative(self, target, output):
+        return -target/output + (1-target)/(1-output)
 
 
 class CrossEntropyError(Error):
