@@ -9,8 +9,6 @@ from report.evaluator import Evaluator
 import numpy
 
 def main():
-    # fixed seed
-    numpy.random.seed(128)
     data = MNISTSeven("../data/mnist_seven.csv", 3000, 1000, 1000)
     myStupidClassifier = StupidRecognizer(data.trainingSet,
                                           data.validationSet,
