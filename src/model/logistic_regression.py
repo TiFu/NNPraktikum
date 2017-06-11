@@ -4,18 +4,20 @@ import sys
 import logging
 
 import numpy as np
-
+import util.loss_functions as lf
 from util.activation_functions import Activation
 from model.classifier import Classifier
+from model.logistic_layer import LogisticLayer
+from report.evaluator import Evaluator
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(message)s',
                     level=logging.DEBUG,
                     stream=sys.stdout)
 
 
-class Perceptron(Classifier):
+class LogisticRegression(Classifier):
     """
-    A digit-7 recognizer based on perceptron algorithm
+    A digit-7 recognizer based on logistic regression algorithm
 
     Parameters
     ----------
@@ -27,13 +29,14 @@ class Perceptron(Classifier):
 
     Attributes
     ----------
-    learningRate : float
-    epochs : int
     trainingSet : list
     validationSet : list
     testSet : list
     weight : list
+    learningRate : float
+    epochs : positive int
     """
+
     def __init__(self, train, valid, test, learningRate=0.01, epochs=50):
 
         self.learningRate = learningRate
@@ -43,12 +46,14 @@ class Perceptron(Classifier):
         self.validationSet = valid
         self.testSet = test
 
-        # Initialize the weight vector with small random values
-        # around 0 and0.1
-        self.weight = np.random.rand(self.trainingSet.input.shape[1])/100
+        # Model
+        self.logistic_layer=LogisticLayer(nIn=self.trainingSet.input.shape[1],
+                                        nOut=1,
+                                        activation='sigmoid',
+                                        isClassifierLayer=True)
 
     def train(self, verbose=True):
-        """Train the perceptron with the perceptron learning algorithm.
+        """Train the Logistic Regression.
 
         Parameters
         ----------
@@ -56,32 +61,34 @@ class Perceptron(Classifier):
             Print logging messages with validation accuracy if verbose is True.
         """
 
-        # Try to use the abstract way of the framework
-        from util.loss_functions import DifferentError
-        loss = DifferentError()
+        loss = lf.BinaryCrossEntropyError()
+        #Evaluator
+        evaluator = Evaluator()
 
+        epoch = 0
         learned = False
-        iteration = 0
-
-        # Train for some epochs if the error is not 0
         while not learned:
             totalError = 0
-            for input, label in zip(self.trainingSet.input,
-                                    self.trainingSet.label):
-                output = self.fire(input)
-                if output != label:
-                    error = loss.calculateError(label, output)
-                    self.updateWeights(input, error)
-                    totalError += error
+            trainingSet = zip(self.trainingSet.input, self.trainingSet.label)
+            for input, label in trainingSet:
 
-            iteration += 1
-            
+                output = self.logistic_layer.forward(input)
+                grad = loss.calculateDerivative(label, output)
+                self.updateWeights(self.learningRate*grad)
+
+                totalError += loss.calculateError(label, output).sum()
+
+            np.random.shuffle(trainingSet)
+
             if verbose:
-                logging.info("Epoch: %i; Error: %i", iteration, -totalError)
-            
-            if totalError == 0 or iteration >= self.epochs:
-                # stop criteria is reached
-                learned = True
+                logging.info("Epoch: %i; error: %.2f", epoch, totalError)
+                evaluator.printAccuracy(self.validationSet,
+                                        self.evaluate(self.validationSet))
+
+            epoch += 1
+            learned = (epoch > self.epochs) or totalError == 0
+
+
 
     def classify(self, testInstance):
         """Classify a single instance.
@@ -95,7 +102,8 @@ class Perceptron(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        return self.fire(testInstance)
+        #print self.fire(testInstance)
+        return self.fire(testInstance) >= 0.5
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -116,9 +124,9 @@ class Perceptron(Classifier):
         # set.
         return list(map(self.classify, test))
 
-    def updateWeights(self, input, error):
-        self.weight += self.learningRate*error*input
+    def updateWeights(self, grad):
+        self.logistic_layer.computeDerivative(grad)
+        self.logistic_layer.updateWeights()
 
     def fire(self, input):
-        """Fire the output of the perceptron corresponding to the input """
-        return Activation.sign(np.dot(np.array(input), self.weight))
+        return self.logistic_layer.fire(input)

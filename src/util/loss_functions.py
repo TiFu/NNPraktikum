@@ -58,10 +58,12 @@ class MeanSquaredError(Error):
     def errorString(self):
         self.errorString = 'mse'
 
-    def calculateError(self, target, output):
-        # Here you have to code the MSE
+    def calculateError(self, target, output, n):
         # MSE = 1/n*sum (i=1 to n) of (target_i - output_i)^2)
-        pass
+        return (1./n)*(target - output)**2
+
+    def calculateDerivative(self, target, output, n):
+        return -(1./2*n)*(target - output)
 
 
 class SumSquaredError(Error):
@@ -73,9 +75,11 @@ class SumSquaredError(Error):
         self.errorString = 'sse'
 
     def calculateError(self, target, output):
-        # Here you have to code the SSE
         # SSE = 1/2*sum (i=1 to n) of (target_i - output_i)^2)
-        pass
+        return 0.5*(target - output)**2
+
+    def calculateDerivative(self, target, output):
+        return -(target - output)
 
 
 class BinaryCrossEntropyError(Error):
@@ -87,7 +91,11 @@ class BinaryCrossEntropyError(Error):
         self.errorString = 'bce'
 
     def calculateError(self, target, output):
-        pass
+        return -(target*np.log(output) + (1-target)*np.log(1-output))
+
+    def calculateDerivative(self, target, output):
+        #Only when combined with softmax or sigmoid
+        return -(target - output)
 
 
 class CrossEntropyError(Error):
@@ -99,4 +107,8 @@ class CrossEntropyError(Error):
         self.errorString = 'crossentropy'
 
     def calculateError(self, target, output):
-        pass
+        return -(target*np.log(output))
+
+    def calculateDerivative(self, target, output):
+        #Only when combined with softmax or sigmoid
+        return -target*(1 - output)

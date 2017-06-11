@@ -35,8 +35,8 @@ class DataSet(object):
         # Transform all labels which is not the targetDigit to False,
         # The label of targetDigit will be True,
         if oneHot:
-            self.label = list(map(lambda a: 1 
-                            if str(a) == targetDigit else 0, 
+            self.label = list(map(lambda a: 1
+                            if str(a) == targetDigit else 0,
                             self.label))
 
     def __iter__(self):
