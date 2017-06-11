@@ -4,6 +4,7 @@
 Activation functions which can be used within neurons.
 """
 from numpy import exp
+from numpy import max
 from numpy import divide
 
 
@@ -53,7 +54,8 @@ class Activation:
 
     @staticmethod
     def softmax(netOutput):
-        return exp(netOutput)/sum(exp(netOutput))
+        e_x = exp(netOutput - max(netOutput))
+        return e_x/e_x.sum()
 
     @staticmethod
     def softmaxPrime(netOutput):

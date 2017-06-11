@@ -29,8 +29,8 @@ class MNISTSeven(object):
 
     # dataPath = "data/mnist_seven.csv"
 
-    def __init__(self, dataPath, 
-                        numTrain=3000, 
+    def __init__(self, dataPath,
+                        numTrain=3000,
                         numValid=1000,
                         numTest=1000):
 

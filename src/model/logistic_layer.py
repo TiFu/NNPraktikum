@@ -82,12 +82,11 @@ class LogisticLayer:
         ndarray :
             a numpy array (1,nOut) containing the output of the layer
         """
-        self.input = input
-        self.output = self.activation(np.dot(self.weights, np.transpose(input)))
-
+        self.input = self.biasInput(input)
+        self.output = self.fire(input)
         return self.output
 
-    def computeDerivative(self, nextDerivatives, nextWeights):
+    def computeDerivative(self, nextDerivatives, nextWeights=None):
         """
         Compute the derivatives (back)
 
@@ -103,18 +102,25 @@ class LogisticLayer:
         ndarray :
             a numpy array containing the partial derivatives on this layer
         """
-        activationDerivative = Activation.getDerivative(self.activationString)
+        if nextWeights is None:
+            nextWeights = np.ones((self.nOut, self.nOut))
 
+        activationDerivative = Activation.getDerivative(self.activationString)
         for i in range(0, self.nOut):
-            #self.delta[i] = self.output[i]*(1-self.output[i])*nextDerivatives[i]
             downStr = np.dot(nextWeights[:, i], nextDerivatives)
-            self.delta[i] = activationDerivative(self.output[i])*downStr
+        self.delta = np.multiply(activationDerivative(self.output), downStr)
+        self.delta = np.reshape(self.delta,(-1,1))
         return self.delta
 
-    def updateWeights(self, learningRate):
+    def updateWeights(self):
         """
         Update the weights of the layer
         """
-        for i in range(0, self.nOut):
-            for j in range(0, self.nIn):
-                self.weights[i,j] -=learningRate*self.delta[i][0]*self.input[j]
+        self.weights = self.weights - np.multiply(self.delta, self.input)
+
+    def biasInput(self, input):
+        return np.append(np.array(input), [1])
+
+    def fire(self, input):
+        return self.activation(np.dot(self.weights,
+                         np.transpose(self.biasInput(input))))

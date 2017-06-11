@@ -94,7 +94,8 @@ class BinaryCrossEntropyError(Error):
         return -(target*np.log(output) + (1-target)*np.log(1-output))
 
     def calculateDerivative(self, target, output):
-        return -target/output + (1-target)/(1-output)
+        #Only when combined with softmax or sigmoid
+        return -(target - output)
 
 
 class CrossEntropyError(Error):
@@ -106,4 +107,8 @@ class CrossEntropyError(Error):
         self.errorString = 'crossentropy'
 
     def calculateError(self, target, output):
-        pass
+        return -(target*np.log(output))
+
+    def calculateDerivative(self, target, output):
+        #Only when combined with softmax or sigmoid
+        return -target*(1 - output)

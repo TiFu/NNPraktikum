@@ -4,9 +4,8 @@ import sys
 import logging
 
 import numpy as np
-
+import util.loss_functions as lf
 from util.activation_functions import Activation
-from util.loss_functions import BinaryCrossEntropyError
 from model.classifier import Classifier
 from model.logistic_layer import LogisticLayer
 from report.evaluator import Evaluator
@@ -47,9 +46,6 @@ class LogisticRegression(Classifier):
         self.validationSet = valid
         self.testSet = test
 
-        # Initialize the weight vector with small values
-        self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1] + 1)
-
         # Model
         self.logistic_layer=LogisticLayer(nIn=self.trainingSet.input.shape[1],
                                         nOut=1,
@@ -65,42 +61,34 @@ class LogisticRegression(Classifier):
             Print logging messages with validation accuracy if verbose is True.
         """
 
-        # Loss function
-        loss = BinaryCrossEntropyError()
+        loss = lf.BinaryCrossEntropyError()
         #Evaluator
         evaluator = Evaluator()
 
-        for epoch in range(0, self.epochs):
+        epoch = 0
+        learned = False
+        while not learned:
+            totalError = 0
+            trainingSet = zip(self.trainingSet.input, self.trainingSet.label)
+            for input, label in trainingSet:
 
-            for input, label in zip(self.trainingSet.input,
-                                    self.trainingSet.label):
+                output = self.logistic_layer.forward(input)
+                grad = loss.calculateDerivative(label, output)
+                self.updateWeights(self.learningRate*grad)
 
-                output = self.logistic_layer.forward(self.biasInput(input))
-                error = loss.calculateDerivative(label, output)
-                #error = -label/output + (1-label)/(1-output)
-                self.updateWeights(error)
+                totalError += loss.calculateError(label, output).sum()
 
-            if verbose:
-                logging.info("Epoch: %i", epoch)
-                evaluator.printAccuracy(self.validationSet, self.evaluate(self.validationSet))
-
-        '''
-        input = map(self.biasInput, self.trainingSet.input)
-        label = np.array(self.trainingSet.label)
-        # Train for some epochs
-        for epoch in range(0, self.epochs):
-            output = np.array(map(self.logistic_layer.forward, input))
-            #error  = loss.calculateError(label, output)
-            error = np.zeros(len(output[0]))
-            for o in range(0, len(output[0])):
-                error[o] = sum(label - output[:,o])
-
-            self.updateWeights(error)
+            np.random.shuffle(trainingSet)
 
             if verbose:
-                logging.info("Epoch: %i", epoch)
-                evaluator.printAccuracy(self.validationSet, self.evaluate(self.validationSet))
-        '''
+                logging.info("Epoch: %i; error: %.2f", epoch, totalError)
+                evaluator.printAccuracy(self.validationSet,
+                                        self.evaluate(self.validationSet))
+
+            epoch += 1
+            learned = (epoch > self.epochs) or totalError == 0
+
+
 
     def classify(self, testInstance):
         """Classify a single instance.
@@ -114,6 +102,7 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
+        #print self.fire(testInstance)
         return self.fire(testInstance) >= 0.5
 
     def evaluate(self, test=None):
@@ -136,19 +125,8 @@ class LogisticRegression(Classifier):
         return list(map(self.classify, test))
 
     def updateWeights(self, grad):
-        self.logistic_layer.computeDerivative(
-                                        grad,
-                                        np.ones((self.logistic_layer.nOut,
-                                        self.logistic_layer.nOut)))
-        self.logistic_layer.updateWeights(self.learningRate)
-        self.weight = self.logistic_layer.weights
-
-
-
-    def biasInput(self, input):
-        return np.append(np.array(input), [1])
+        self.logistic_layer.computeDerivative(grad)
+        self.logistic_layer.updateWeights()
 
     def fire(self, input):
-        # Look at how we change the activation function here!!!!
-        # Not Activation.sign as in the perceptron, but sigmoid
-        return Activation.sigmoid(np.dot(self.biasInput(input), self.weight[0]))
+        return self.logistic_layer.fire(input)
