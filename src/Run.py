@@ -63,6 +63,5 @@ def main():
     print("\nResult of the Logistic Regression recognizer:")
     # evaluator.printComparison(data.testSet, perceptronPred)
     evaluator.printAccuracy(data.testSet, logisticPred)
-
 if __name__ == '__main__':
     main()
