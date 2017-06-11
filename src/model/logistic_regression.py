@@ -57,24 +57,20 @@ class LogisticRegression(Classifier):
         """
         # Try to use the abstract way of the framework
         from util.loss_functions import BinaryCrossEntropyError, MeanSquaredError
-#        loss = BinaryCrossEntropyError()
-        loss = MeanSquaredError()
+        loss = BinaryCrossEntropyError()
+#        loss = MeanSquaredError()
 
         learned = False
         iteration = 0
 
-        # Train for some epochs if the error is not 0
         while not learned:
             totalError = 0
             grad = 0
             for input, label in zip(self.trainingSet.input,
                                     self.trainingSet.label):
                 output = self.fire(input)
-                error = loss.calculateError(label, output)
-                totalError += error
-                lossDerivative = loss.calculateDerivative(label, output)
-                activationDerivative = Activation.getDerivative('sigmoid')(output)
-                grad += lossDerivative * activationDerivative * input
+                totalError += loss.calculateError(label, output)
+                grad += (-label + output) * input
             self.updateWeights(grad)
             iteration += 1
 
@@ -120,7 +116,7 @@ class LogisticRegression(Classifier):
         return list(map(self.classify, test))
 
     def updateWeights(self, grad):
-        self.weight += self.learningRate * grad
+        self.weight -= self.learningRate * grad
 
     def fire(self, input):
         # Look at how we change the activation function here!!!!
