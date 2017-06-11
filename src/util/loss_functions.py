@@ -86,9 +86,9 @@ class BinaryCrossEntropyError(Error):
         self.errorString = 'bce'
 
     def calculateError(self, target, output):
-        # Note that I added a small offset in order to avoid log(0)
+        # Note that I added a minimum value for the output in order to avoid log(0)
         # This is due to the limited precision of floating point numbers
-        return - (target * np.log(output + 10e-11) + (1 - target) * np.log(1 - output + 10e-11))
+        return - (target * np.log(np.maximum(output, 10e-11)) + (1 - target) * np.log(np.maximum(1 - output, 10e-11)))
 
 class CrossEntropyError(Error):
     """
@@ -99,4 +99,4 @@ class CrossEntropyError(Error):
         self.errorString = 'crossentropy'
 
     def calculateError(self, target, output):
-        pass
+        return -sum(target*np.log(np.maximum(output, 10e-11)))
