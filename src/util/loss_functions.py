@@ -60,8 +60,17 @@ class MeanSquaredError(Error):
 
     def calculateError(self, target, output):
         # MSE = 1/n*sum (i=1 to n) of (target_i - output_i)^2)
-        pass
+        target = np.array(target, ndmin=1)
+        output = np.array(output, ndmin=1)
+        diff = target - output
+        return 1. / len(target) * sum(diff * diff)
 
+
+    def calculateDerivative(self, target, output):
+        target = np.array(target, ndmin=1)
+        output = np.array(output, ndmin=1)
+        diff = target - output
+        return - 2 / len(target) * sum(diff)
 
 class SumSquaredError(Error):
     """

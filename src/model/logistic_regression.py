@@ -56,8 +56,9 @@ class LogisticRegression(Classifier):
             Print logging messages with validation accuracy if verbose is True.
         """
         # Try to use the abstract way of the framework
-        from util.loss_functions import BinaryCrossEntropyError
-        loss = BinaryCrossEntropyError()
+        from util.loss_functions import BinaryCrossEntropyError, MeanSquaredError
+#        loss = BinaryCrossEntropyError()
+        loss = MeanSquaredError()
 
         learned = False
         iteration = 0
@@ -74,12 +75,11 @@ class LogisticRegression(Classifier):
                 lossDerivative = loss.calculateDerivative(label, output)
                 activationDerivative = Activation.getDerivative('sigmoid')(output)
                 grad += lossDerivative * activationDerivative * input
-
             self.updateWeights(grad)
             iteration += 1
 
             if verbose:
-                logging.info("Epoch: %i; Error: %i", iteration, -totalError)
+                logging.info("Epoch: %i; Error: %f", iteration, -totalError)
 
             if totalError == 0 or iteration >= self.epochs:
                 # stop criteria is reached

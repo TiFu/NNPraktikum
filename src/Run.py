@@ -6,9 +6,11 @@ from model.stupid_recognizer import StupidRecognizer
 from model.perceptron import Perceptron
 from model.logistic_regression import LogisticRegression
 from report.evaluator import Evaluator
-
+import numpy
 
 def main():
+    # fixed seed
+    numpy.random.seed(128)
     data = MNISTSeven("../data/mnist_seven.csv", 3000, 1000, 1000)
     myStupidClassifier = StupidRecognizer(data.trainingSet,
                                           data.validationSet,
@@ -22,7 +24,7 @@ def main():
                                         data.validationSet,
                                         data.testSet,
                                         learningRate=0.005,
-                                        epochs=30)
+                                        epochs=50)
     # Train the classifiers
     print("=========================")
     print("Training..")
