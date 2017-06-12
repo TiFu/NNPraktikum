@@ -68,10 +68,10 @@ class LogisticRegression(Classifier):
             grad = 0
             for input, label in zip(self.trainingSet.input,
                                     self.trainingSet.label):
-                augmentedInput = self.augment(input)
-                output = self.fire(augmentedInput)
+                inputWithBias = self.addBias(input)
+                output = self.fire(inputWithBias)
                 totalError += loss.calculateError(label, output)
-                grad += (-label + output) * augmentedInput
+                grad += (-label + output) * inputWithBias
             self.updateWeights(grad)
             iteration += 1
 
@@ -83,7 +83,7 @@ class LogisticRegression(Classifier):
                 learned = True
 
 
-    def augment(self, instance):
+    def addBias(self, instance):
         return np.append(instance, 1)
 
     def classify(self, testInstance):
@@ -98,7 +98,7 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        return self.fire(self.augment(testInstance)) >= 0.5
+        return self.fire(self.addBias(testInstance)) >= 0.5
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
