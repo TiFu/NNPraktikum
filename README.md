@@ -7,6 +7,17 @@ for more information.
 ## Python version
 We use Python 2.7, not Python 3.x
 
+## Mitglieder
+
+| Name | Matrikelnummer     |
+| :------------- | :------------- |
+| Robin Rüde       | 1735686       |
+| Selcuk Aklanoglu | 1942672       |
+| Yassine El Himer | 1913606       |
+| Jonas Paczia | 1765166 |
+| Simon Roesler | 1765199 || Tino Fuhrmann | 1764221 |
+
+
 ## Requirements
 
 You have to install two 3rd-party packages: Numpy and scikit-learn.
