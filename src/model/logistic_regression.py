@@ -45,7 +45,7 @@ class LogisticRegression(Classifier):
         self.testSet = test
 
         # Initialize the weight vector with small values
-        self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1])
+        self.weight = 0.01*np.random.randn(self.trainingSet.input.shape[1] + 1)
 
     def train(self, verbose=True):
         """Train the Logistic Regression.
@@ -68,9 +68,10 @@ class LogisticRegression(Classifier):
             grad = 0
             for input, label in zip(self.trainingSet.input,
                                     self.trainingSet.label):
-                output = self.fire(input)
+                augmentedInput = self.augment(input)
+                output = self.fire(augmentedInput)
                 totalError += loss.calculateError(label, output)
-                grad += (-label + output) * input
+                grad += (-label + output) * augmentedInput
             self.updateWeights(grad)
             iteration += 1
 
@@ -81,6 +82,9 @@ class LogisticRegression(Classifier):
                 # stop criteria is reached
                 learned = True
 
+
+    def augment(self, instance):
+        return np.append(instance, 1)
 
     def classify(self, testInstance):
         """Classify a single instance.
@@ -94,7 +98,7 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        return self.fire(testInstance) >= 0.5
+        return self.fire(self.augment(testInstance)) >= 0.5
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
