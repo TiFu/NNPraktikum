@@ -7,6 +7,10 @@ for more information.
 ## Python version
 We use Python 2.7, not Python 3.x
 
+## Diagramm
+
+Graph of Performance on different epochs is in ./epochs.png
+
 ## Mitglieder
 
 | Name | Matrikelnummer     |
@@ -15,7 +19,8 @@ We use Python 2.7, not Python 3.x
 | Selcuk Aklanoglu | 1942672       |
 | Yassine El Himer | 1913606       |
 | Jonas Paczia | 1765166 |
-| Simon Roesler | 1765199 || Tino Fuhrmann | 1764221 |
+| Simon Roesler | 1765199 |
+| Tino Fuhrmann | 1764221 |
 
 
 ## Requirements
