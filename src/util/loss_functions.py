@@ -74,7 +74,7 @@ class SumSquaredError(Error):
     def calculateError(self, target, output):
         # SSE = 1/2*sum (i=1 to n) of (target_i - output_i)^2)
         diff = target - output
-        return 1 /2 * sum(diff * diff)
+        return 1. /2. * sum(diff * diff)
 
 
 class BinaryCrossEntropyError(Error):
