@@ -48,8 +48,8 @@ class LogisticRegression(Classifier):
 
         # Model
         self.logistic_layer=LogisticLayer(nIn=self.trainingSet.input.shape[1],
-                                        nOut=1,
-                                        activation='sigmoid',
+                                        nOut=2,
+                                        activation='softmax',
                                         isClassifierLayer=True)
 
     def train(self, verbose=True):
@@ -61,7 +61,7 @@ class LogisticRegression(Classifier):
             Print logging messages with validation accuracy if verbose is True.
         """
 
-        loss = lf.BinaryCrossEntropyError()
+        loss = lf.CrossEntropyError()
         #Evaluator
         evaluator = Evaluator()
 
@@ -73,6 +73,7 @@ class LogisticRegression(Classifier):
             for input, label in trainingSet:
 
                 output = self.logistic_layer.forward(input)
+                label = self.encodeLabel(label)
                 grad = loss.calculateDerivative(label, output)
                 self.updateWeights(self.learningRate*grad)
 
@@ -102,8 +103,7 @@ class LogisticRegression(Classifier):
         bool :
             True if the testInstance is recognized as a 7, False otherwise.
         """
-        #print self.fire(testInstance)
-        return self.fire(testInstance) >= 0.5
+        return np.argmax(self.fire(testInstance))
 
     def evaluate(self, test=None):
         """Evaluate a whole dataset.
@@ -127,6 +127,11 @@ class LogisticRegression(Classifier):
     def updateWeights(self, grad):
         self.logistic_layer.computeDerivative(grad)
         self.logistic_layer.updateWeights()
+
+    def encodeLabel(self, label):
+        encodedLabel = np.zeros(self.logistic_layer.nOut)
+        encodedLabel[label] = 1
+        return encodedLabel
 
     def fire(self, input):
         return self.logistic_layer.fire(input)

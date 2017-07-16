@@ -79,7 +79,7 @@ class SumSquaredError(Error):
         return 0.5*(target - output)**2
 
     def calculateDerivative(self, target, output):
-        return -(target - output)
+        return output - target
 
 
 class BinaryCrossEntropyError(Error):
@@ -95,7 +95,7 @@ class BinaryCrossEntropyError(Error):
 
     def calculateDerivative(self, target, output):
         #Only when combined with softmax or sigmoid
-        return -(target - output)
+        return output - target
 
 
 class CrossEntropyError(Error):
@@ -111,4 +111,4 @@ class CrossEntropyError(Error):
 
     def calculateDerivative(self, target, output):
         #Only when combined with softmax or sigmoid
-        return -target*(1 - output)
+        return output - target

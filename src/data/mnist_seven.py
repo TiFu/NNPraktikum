@@ -8,7 +8,6 @@ from data.data_set import DataSet
 class MNISTSeven(object):
     """
     Small subset (5000 instances) of MNIST data to recognize the digit 7
-
     Parameters
     ----------
     dataPath : string
@@ -19,7 +18,6 @@ class MNISTSeven(object):
         Number of validation examples.
     numTest : int
         Number of test examples.
-
     Attributes
     ----------
     trainingSet : list
@@ -32,15 +30,17 @@ class MNISTSeven(object):
     def __init__(self, dataPath,
                         numTrain=3000,
                         numValid=1000,
-                        numTest=1000):
+                        numTest=1000,
+                        oneHot=True,
+                        targetDigit='7'):
 
         self.trainingSet = []
         self.validationSet = []
         self.testSet = []
 
-        self.load(dataPath, numTrain, numValid, numTest)
+        self.load(dataPath, numTrain, numValid, numTest, oneHot, targetDigit)
 
-    def load(self, dataPath, numTrain, numValid, numTest):
+    def load(self, dataPath, numTrain, numValid, numTest, oneHot, targetDigit):
         """Load the data."""
         print("Loading data from " + dataPath + "...")
 
@@ -52,8 +52,8 @@ class MNISTSeven(object):
 
         train, valid = train[:numTrain], train[numTrain:]
 
-        self.trainingSet = DataSet(train)
-        self.validationSet = DataSet(valid)
-        self.testSet = DataSet(test)
+        self.trainingSet = DataSet(train, oneHot, targetDigit)
+        self.validationSet = DataSet(valid, oneHot, targetDigit)
+        self.testSet = DataSet(test, oneHot, targetDigit)
 
         print("Data loaded.")

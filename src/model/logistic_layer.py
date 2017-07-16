@@ -39,7 +39,7 @@ class LogisticLayer:
     """
 
     def __init__(self, nIn, nOut, weights=None,
-                 activation='softmax', isClassifierLayer=True):
+                 activation='sigmoid', isClassifierLayer=True):
 
         # Get activation function from string
         # Notice the functional programming paradigms of Python + Numpy
@@ -103,12 +103,15 @@ class LogisticLayer:
             a numpy array containing the partial derivatives on this layer
         """
         if nextWeights is None:
-            nextWeights = np.ones((self.nOut, self.nOut))
+            self.delta = nextDerivatives
+        else:
+            activationDerivative = Activation.getDerivative(self.activationString)
+            downStr = np.zeros(self.nOut)
+            for i in range(0, self.nOut):
+                downStr[i] = np.dot(nextWeights[:, i], nextDerivatives)
 
-        activationDerivative = Activation.getDerivative(self.activationString)
-        for i in range(0, self.nOut):
-            downStr = np.dot(nextWeights[:, i], nextDerivatives)
-        self.delta = np.multiply(activationDerivative(self.output), downStr)
+            self.delta = np.multiply(activationDerivative(self.output), downStr)
+
         self.delta = np.reshape(self.delta,(-1,1))
         return self.delta
 
