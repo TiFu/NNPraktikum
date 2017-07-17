@@ -48,7 +48,7 @@ class LogisticRegression(Classifier):
 
         # Model
         self.logistic_layer=LogisticLayer(nIn=self.trainingSet.input.shape[1],
-                                        nOut=10,
+                                        nOut=2,
                                         activation='softmax',
                                         isClassifierLayer=True)
 
